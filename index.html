@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aspirants Shop</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    body {
+      background-color: #0f0f1a;
+      color: #ffffff;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+    header {
+      margin-bottom: 40px;
+    }
+    header h1 {
+      font-size: 2.5rem;
+      color: #00d4ff;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+    }
+    header p {
+      color: #aaa;
+      font-size: 1.1rem;
+    }
+    .menu {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .item {
+      background: #1a1a2e;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 212, 255, 0.2);
+    }
+    .item h3 {
+      color: #00d4ff;
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+    }
+    .item p {
+      color: #ccc;
+      margin-bottom: 15px;
+    }
+    .whatsapp-btn {
+      display: inline-block;
+      background: #25D366;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    footer {
+      margin-top: 50px;
+      color: #777;
+      font-size: 0.9rem;
+    }
+    .admin-link {
+      display: block;
+      margin-top: 20px;
+      color: #00d4ff;
+      text-decoration: underline;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Aspirants Shop</h1>
+      <p>Your trusted destination for game top-ups & services</p>
+    </header>
+
+    <div class="menu">
+      <div class="item">
+        <h3>Free Fire</h3>
+        <p>Fast & secure diamonds top-up</p>
+        <a href="https://wa.me/yournumber" class="whatsapp-btn" target="_blank">Order Now</a>
+      </div>
+      <div class="item">
+        <h3>PUBG Mobile</h3>
+        <p>UC top-up with instant delivery</p>
+        <a href="https://wa.me/yournumber" class="whatsapp-btn" target="_blank">Order Now</a>
+      </div>
+      <div class="item">
+        <h3>Valorant Points</h3>
+        <p>Get RP fast via WhatsApp</p>
+        <a href="https://wa.me/yournumber" class="whatsapp-btn" target="_blank">Order Now</a>
+      </div>
+    </div>
+
+    <footer>
+      &copy; 2025 Aspirants Shop. All rights reserved.
+      <a href="#" class="admin-link">Admin Panel (External)</a>
+    </footer>
+  </div>
+</body>
+</html>
