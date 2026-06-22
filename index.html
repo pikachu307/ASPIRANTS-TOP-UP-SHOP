@@ -1,119 +1,487 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Aspirants Shop</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
-    }
-    body {
-      background-color: #0f0f1a;
-      color: #ffffff;
-      line-height: 1.6;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-      text-align: center;
-    }
-    header {
-      margin-bottom: 40px;
-    }
-    header h1 {
-      font-size: 2.5rem;
-      color: #00d4ff;
-      margin-bottom: 10px;
-      text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
-    }
-    header p {
-      color: #aaa;
-      font-size: 1.1rem;
-    }
-    .menu {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-bottom: 40px;
-    }
-    .item {
-      background: #1a1a2e;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-    .item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0, 212, 255, 0.2);
-    }
-    .item h3 {
-      color: #00d4ff;
-      margin-bottom: 10px;
-      font-size: 1.3rem;
-    }
-    .item p {
-      color: #ccc;
-      margin-bottom: 15px;
-    }
-    .whatsapp-btn {
-      display: inline-block;
-      background: #25D366;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    footer {
-      margin-top: 50px;
-      color: #777;
-      font-size: 0.9rem;
-    }
-    .admin-link {
-      display: block;
-      margin-top: 20px;
-      color: #00d4ff;
-      text-decoration: underline;
-      font-size: 0.9rem;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1>Aspirants Shop</h1>
-      <p>Your trusted destination for game top-ups & services</p>
-    </header>
+import React, { useState } from 'react';
+import { 
+  Menu, Paintbrush, ChevronRight, MessageSquare, Shield, 
+  Zap, CreditCard, Headphones, Home, Package, ShoppingCart, 
+  Users, Layers, Settings, Image as ImageIcon, BarChart3, 
+  LogOut, RefreshCw, Plus, Save, Trash2, X, ArrowLeft, Check, Ban
+} from 'lucide-react';
 
-    <div class="menu">
-      <div class="item">
-        <h3>Free Fire</h3>
-        <p>Fast & secure diamonds top-up</p>
-        <a href="https://wa.me/yournumber" class="whatsapp-btn" target="_blank">Order Now</a>
-      </div>
-      <div class="item">
-        <h3>PUBG Mobile</h3>
-        <p>UC top-up with instant delivery</p>
-        <a href="https://wa.me/yournumber" class="whatsapp-btn" target="_blank">Order Now</a>
-      </div>
-      <div class="item">
-        <h3>Valorant Points</h3>
-        <p>Get RP fast via WhatsApp</p>
-        <a href="https://wa.me/yournumber" class="whatsapp-btn" target="_blank">Order Now</a>
-      </div>
+export default function App() {
+  // Navigation & View States
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [currentView, setCurrentView] = useState('home'); // 'home' or 'admin'
+  const [adminTab, setAdminTab] = useState('analytics'); // 'analytics', 'users', 'packages', 'orders', 'banners', 'settings'
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Form & Selection States
+  const [selectedPack, setSelectedPack] = useState(null);
+  const [gameId, setGameId] = useState('');
+  const [serverId, setServerId] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('upi');
+  const [refId, setRefId] = useState('');
+
+  // Mock Global Data (Editable via Admin)
+  const [siteSettings, setSiteSettings] = useState({
+    heroTitle: 'MLBB Diamonds, Topped Up in Minutes',
+    heroSubtitle: 'Real prices, real delivery — handled personally by TAMNALAI',
+    upiId: 'tamnalai@ptaxis',
+    location: 'India'
+  });
+
+  const [packs, setPacks] = useState([
+    { id: 1, amount: 3, price: 10, popular: true },
+    { id: 2, amount: 5, price: 15, popular: false },
+    { id: 3, amount: 11, price: 20, popular: false },
+    { id: 4, amount: 22, price: 38, popular: true },
+    { id: 5, amount: 44, price: 73, popular: false },
+    { id: 6, amount: 56, price: 85, popular: false },
+    { id: 7, amount: 86, price: 126, popular: false, isBag: true },
+    { id: 8, amount: 112, price: 167, popular: false, isBag: true },
+    { id: 9, amount: 172, price: 252, popular: true, isBag: true },
+    { id: 10, amount: 257, price: 361, popular: true, isBag: true }
+  ]);
+
+  const [orders, setOrders] = useState([
+    { id: '1', pack: '3', price: 10, user: 'TAMNALAI', gameId: '1247417509', server: '15069', payment: 'UPI', ref: '6749340983087', date: '20/06/2026, 07:17:10', status: 'COMPLETED' },
+    { id: '2', pack: '5', price: 15, user: 'ROMESH', gameId: '1247417509', server: '15069', payment: 'UPI', ref: '9862277104', date: '19/06/2026, 14:28:19', status: 'COMPLETED' }
+  ]);
+
+  const [users, setUsers] = useState([
+    { name: 'JUST_ONE_LAISHRAM', email: 'laishramjust1@gmail.com', role: 'USER' },
+    { name: 'ROMESH', email: 'yumnamromesh6@gmail.com', role: 'USER' },
+    { name: 'TAMNALAI', email: 'maniloitongbam1@gmail.com', role: 'ADMIN' }
+  ]);
+
+  // WhatsApp Order String Generator
+  const handleConfirmOrder = () => {
+    if (!selectedPack || !gameId || !serverId) {
+      alert("Please enter account details and select a package.");
+      return;
+    }
+    const message = `Hello, I want to top up:\nPack: ${selectedPack.amount} Diamonds\nPrice: ₹${selectedPack.price}\nGame ID: ${gameId}\nServer ID: ${serverId}\nRef ID: ${refId}`;
+    window.open(`https://wa.me/91XXXXXXXXXX?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
+  return (
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-sans antialiased pb-12">
+      
+      {/* --- TOP NAVBAR --- */}
+      <nav className="sticky top-0 bg-white border-b border-slate-100 z-40 px-4 py-3 flex items-center justify-between shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md shadow-blue-100 overflow-hidden">
+            <span className="text-white font-black text-xs tracking-wider">ASP</span>
+          </div>
+          <div>
+            <h1 className="font-black text-slate-900 tracking-tight leading-none text-base">ASPIRANTS.</h1>
+            <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">SHOP</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button className="p-2 text-slate-500 hover:bg-slate-50 rounded-full border border-slate-100">
+            <Paintbrush size={18} />
+          </button>
+          <button onClick={() => setMenuOpen(true)} className="p-2 text-slate-700 hover:bg-slate-50 rounded-full border border-slate-100">
+            <Menu size={20} />
+          </button>
+        </div>
+      </nav>
+
+      {/* --- SIDE MENU MOBILE DRAWER --- */}
+      {menuOpen && (
+        <div className="fixed inset-0 z-50 flex">
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setMenuOpen(false)} />
+          <div className="relative ml-auto w-72 max-w-full bg-white h-full shadow-2xl p-6 flex flex-col justify-between animate-in slide-in-from-right duration-200">
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-cyan-500 rounded-md" />
+                  <span className="font-bold text-slate-800">ASPIRANTS. SHOP</span>
+                </div>
+                <button onClick={() => setMenuOpen(false)} className="p-1 rounded-full hover:bg-slate-100"><X size={20} /></button>
+              </div>
+              <div className="bg-slate-50 p-3 rounded-xl mb-4 text-xs font-medium text-slate-600 border border-slate-100">
+                Signed in as <span className="font-bold text-slate-900">TAMNALAI</span>
+              </div>
+              <div className="space-y-1">
+                <button onClick={() => { setCurrentView('home'); setMenuOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700 font-medium text-sm text-left"><Home size={18} className="text-cyan-500"/> Home</button>
+                <button className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700 font-medium text-sm text-left"><Package size={18} className="text-cyan-500"/> Packs</button>
+                <button className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700 font-medium text-sm text-left"><ShoppingCart size={18} className="text-cyan-500"/> Orders</button>
+                <button className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700 font-medium text-sm text-left"><Shield size={18} className="text-cyan-500"/> Why Us</button>
+                
+                <div className="border-t border-slate-100 my-3" />
+                
+                <button onClick={() => { setCurrentView('admin'); setIsAdmin(true); setMenuOpen(false); }} className="w-full flex items-center gap-3 p-3 rounded-xl bg-cyan-50 text-cyan-700 font-semibold text-sm text-left"><Settings size={18}/> Admin Panel</button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <button className="w-full bg-cyan-500 hover:bg-cyan-600 text-white p-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 shadow-lg shadow-cyan-100 transition"><MessageSquare size={16}/> WhatsApp Support</button>
+              <button className="w-full border border-slate-200 text-slate-500 p-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 hover:bg-slate-50"><LogOut size={16}/> Sign Out</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* USER FRONTEND                        */}
+      {/* ========================================================= */}
+      {currentView === 'home' && (
+        <div className="max-w-md mx-auto px-4 mt-4 space-y-5">
+          
+          {/* Main Hero Banner */}
+          <div className="relative rounded-3xl overflow-hidden bg-slate-900 text-white p-6 shadow-xl aspect-[16/10] flex flex-col justify-end group">
+            <img 
+              src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=600" 
+              className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-luminosity scale-105 group-hover:scale-100 transition duration-700"
+              alt="Promo Banner"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent" />
+            <div className="relative z-10 space-y-2">
+              <span className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-bold tracking-wide border border-white/10 w-fit">Trusted by Indian gamers</span>
+              <h2 className="text-2xl font-black tracking-tight uppercase leading-none">ASPIRANTS.<br/><span className="text-cyan-400">SHOP</span></h2>
+              <p className="text-[10px] text-slate-300 tracking-wide uppercase">Exclusive Skins, Limited Time, Unlock the Future.</p>
+            </div>
+          </div>
+
+          {/* Game Identification Header */}
+          <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm flex gap-4 items-center">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md flex-shrink-0 overflow-hidden flex items-center justify-center text-white font-bold">MLBB</div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-bold text-slate-900 text-base truncate">Mobile Legends: Bang Bang</h3>
+              <p className="text-xs text-slate-400 font-medium">Fast delivery · Secure payments</p>
+              <p className="text-[11px] text-slate-500 mt-0.5">Available for <span className="font-semibold text-slate-800">India & Brazil</span> servers only.</p>
+            </div>
+          </div>
+
+          {/* Step 1: Account Details */}
+          <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 pb-1 border-b border-slate-50">
+              <div className="w-1 h-4 bg-cyan-500 rounded-full" />
+              <h4 className="font-bold text-slate-900 text-sm">Enter Account Details</h4>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Game ID</label>
+                <input type="text" value={gameId} onChange={(e)=>setGameId(e.target.value)} placeholder="e.g. 123456789" className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-3 text-sm focus:outline-none focus:border-cyan-500 font-medium transition" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Server ID</label>
+                <input type="text" value={serverId} onChange={(e)=>setServerId(e.target.value)} placeholder="e.g. 2001" className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-3 text-sm focus:outline-none focus:border-cyan-500 font-medium transition" />
+              </div>
+            </div>
+          </div>
+
+          {/* Step 2: Select Package */}
+          <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 pb-1 border-b border-slate-50">
+              <div className="w-1 h-4 bg-cyan-500 rounded-full" />
+              <h4 className="font-bold text-slate-900 text-sm">Select a Pack</h4>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {packs.map((pack) => (
+                <div 
+                  key={pack.id}
+                  onClick={() => setSelectedPack(pack)}
+                  className={`relative p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between overflow-hidden ${selectedPack?.id === pack.id ? 'border-cyan-500 bg-cyan-50/30' : 'border-slate-100 bg-white hover:border-slate-200'}`}
+                >
+                  {pack.popular && <span className="absolute top-0 right-0 bg-cyan-500 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-bl-xl tracking-wider shadow-sm">Popular</span>}
+                  <div className="space-y-1">
+                    <span className="block font-black text-slate-800 text-lg leading-tight">{pack.amount}</span>
+                    <span className="block text-sm font-bold text-cyan-600">₹{pack.price}</span>
+                  </div>
+                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                    {pack.isBag ? '💼' : '💎'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Step 3: Payment Method */}
+          <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 pb-1 border-b border-slate-50">
+              <div className="w-1 h-4 bg-cyan-500 rounded-full" />
+              <h4 className="font-bold text-slate-900 text-sm">Payment Method</h4>
+            </div>
+            
+            <div className="space-y-2">
+              <div onClick={()=>setPaymentMethod('upi')} className={`p-4 rounded-2xl border-2 cursor-pointer flex items-center gap-4 transition ${paymentMethod === 'upi' ? 'border-cyan-500 bg-cyan-50/20' : 'border-slate-100 bg-white'}`}>
+                <div className="w-10 h-10 bg-cyan-500 rounded-xl flex items-center justify-center text-white"><CreditCard size={20}/></div>
+                <div>
+                  <h5 className="font-bold text-slate-800 text-sm">UPI / QR</h5>
+                  <p className="text-[11px] text-slate-400 font-medium">Pay instantly via any UPI app</p>
+                </div>
+              </div>
+              <div onClick={()=>setPaymentMethod('wallet')} className={`p-4 rounded-2xl border-2 cursor-pointer flex items-center gap-4 transition opacity-60 ${paymentMethod === 'wallet' ? 'border-cyan-500 bg-cyan-50/20' : 'border-slate-100 bg-white'}`}>
+                <div className="w-10 h-10 bg-slate-400 rounded-xl flex items-center justify-center text-white"><Package size={20}/></div>
+                <div>
+                  <h5 className="font-bold text-slate-800 text-sm">Wallet Transfer</h5>
+                  <p className="text-[11px] text-slate-400 font-medium">Direct UPI ID transfer</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Static QR Sandbox Panel */}
+            <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col items-center text-center space-y-3">
+              <div className="w-36 h-36 bg-white border border-slate-200 rounded-xl p-2 shadow-inner flex items-center justify-center">
+                {/* Mock QR Code representation */}
+                <div className="w-full h-full bg-[radial-gradient(#334155_2px,transparent_2px)] [background-size:8px_8px] opacity-80" />
+              </div>
+              <div className="w-full space-y-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">UPI ID</span>
+                <div className="bg-cyan-50 text-cyan-700 text-xs font-mono font-bold p-2.5 rounded-xl border border-cyan-100/50 select-all">
+                  {siteSettings.upiId}
+                </div>
+              </div>
+              <p className="text-[11px] font-medium text-slate-400 max-w-xs leading-normal">Pay the exact pack amount, then paste your UPI reference / transaction ID below.</p>
+              <input type="text" value={refId} onChange={(e)=>setRefId(e.target.value)} placeholder="e.g. 4567XXXXXX" className="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs focus:outline-none focus:border-cyan-500 font-mono text-center" />
+            </div>
+          </div>
+
+          {/* Step 4: Checkout Summary */}
+          <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-4">
+            <div className="flex items-center gap-2 pb-1 border-b border-slate-50">
+              <div className="w-1 h-4 bg-cyan-500 rounded-full" />
+              <h4 className="font-bold text-slate-900 text-sm">Order Summary</h4>
+            </div>
+            <div className="space-y-2 text-xs font-semibold text-slate-500">
+              <div className="flex justify-between"><span>Selected Pack</span><span className="text-slate-800 font-bold">{selectedPack ? `${selectedPack.amount} Diamonds` : '—'}</span></div>
+              <div className="flex justify-between"><span>Total Price</span><span className="text-cyan-600 font-black text-sm">{selectedPack ? `₹${selectedPack.price}` : '—'}</span></div>
+              <div className="flex justify-between"><span>Payment Mode</span><span className="text-slate-800 font-bold uppercase">{paymentMethod} / QR</span></div>
+            </div>
+            <button 
+              onClick={handleConfirmOrder}
+              className="w-full bg-slate-900 text-white font-bold p-3.5 rounded-2xl flex items-center justify-center gap-2 shadow-xl shadow-slate-200/80 active:scale-[0.99] transition"
+            >
+              <Check size={16}/> Confirm Order on WhatsApp
+            </button>
+            <p className="text-[10px] text-center font-medium text-slate-400">You'll be redirected to WhatsApp with your order pre-filled.</p>
+          </div>
+
+          {/* Value Props Grid */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm flex flex-col gap-2">
+              <div className="w-8 h-8 bg-blue-50 text-blue-500 rounded-lg flex items-center justify-center"><Shield size={16}/></div>
+              <h5 className="font-bold text-slate-800 text-xs">100% Secure</h5>
+              <p className="text-[10px] text-slate-400 font-medium leading-normal">Verified manual delivery system secure pipeline.</p>
+            </div>
+            <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm flex flex-col gap-2">
+              <div className="w-8 h-8 bg-amber-50 text-amber-500 rounded-lg flex items-center justify-center"><Zap size={16}/></div>
+              <h5 className="font-bold text-slate-800 text-xs">Quick Refills</h5>
+              <p className="text-[10px] text-slate-400 font-medium leading-normal">Most system top-up orders filled within 10 min.</p>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* ADMIN DASHBOARD                      */}
+      {/* ========================================================= */}
+      {currentView === 'admin' && (
+        <div className="max-w-2xl mx-auto px-4 mt-4 space-y-4">
+          
+          {/* Admin Header Context Router */}
+          <div className="flex items-center justify-between bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
+            <button onClick={() => setCurrentView('home')} className="flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-800">
+              <ArrowLeft size={16}/> Back to shop
+            </button>
+            <div className="flex items-center gap-1.5 bg-cyan-50 text-cyan-700 px-3 py-1 rounded-xl text-xs font-bold">
+              <Shield size={14}/> Admin Panel
+            </div>
+          </div>
+
+          {/* Core Admin Navigation Row Tabs */}
+          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+            {[
+              { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+              { id: 'users', label: 'Users', icon: Users },
+              { id: 'packages', label: 'Games & Packages', icon: Layers },
+              { id: 'orders', label: 'Orders', icon: ShoppingCart },
+              { id: 'banners', label: 'Banners', icon: ImageIcon },
+              { id: 'settings', label: 'Site Settings', icon: Settings },
+            ].map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setAdminTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap border transition ${adminTab === tab.id ? 'bg-cyan-500 text-white border-cyan-500 shadow-md shadow-cyan-100' : 'bg-white border-slate-100 text-slate-500 hover:bg-slate-50'}`}
+                >
+                  <Icon size={14}/> {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* TAB 1: ANALYTICS SUBPANEL */}
+          {adminTab === 'analytics' && (
+            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-6">
+              <div className="flex justify-between items-center">
+                <h3 className="font-bold text-slate-900 text-base">Store Metrics Overview</h3>
+                <button className="p-2 text-slate-400 hover:bg-slate-50 rounded-xl border border-slate-100"><RefreshCw size={14}/></button>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-slate-50 border border-slate-100 p-4 rounded-2xl">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Volume</span>
+                  <div className="text-xl font-black text-slate-800">₹2,840.00</div>
+                </div>
+                <div className="bg-slate-50 border border-slate-100 p-4 rounded-2xl">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Orders Filled</span>
+                  <div className="text-xl font-black text-slate-800">{orders.length} Completed</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: USER ACCOUNT MANAGER */}
+          {adminTab === 'users' && (
+            <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="font-bold text-slate-900 text-base">Users Registry</h3>
+                <button className="p-2 text-slate-400 hover:bg-slate-50 rounded-xl border border-slate-100"><RefreshCw size={14}/></button>
+              </div>
+              <input type="text" placeholder="Search by username or email..." className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs focus:outline-none focus:border-cyan-500 font-medium" />
+              
+              <div className="divide-y divide-slate-50">
+                {users.map((u, i) => (
+                  <div key={i} className="py-3 flex.col sm:flex sm:items-center justify-between gap-3 first:pt-0 last:pb-0">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-slate-800 text-sm">{u.name}</span>
+                        {u.role === 'ADMIN' && <span className="bg-blue-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-md">ADMIN</span>}
+                      </div>
+                      <span className="text-xs font-medium text-slate-400 font-mono block">{u.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                      <button className="px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50">{u.role === 'ADMIN' ? 'Demote' : 'Promote'}</button>
+                      <button className="px-3 py-1.5 border border-red-100 text-red-500 rounded-xl text-xs font-bold bg-red-50/20 hover:bg-red-50 flex items-center gap-1"><Ban size={12}/> Ban</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: PACKAGE BUILDER & CATLOG CONFIG */}
+          {adminTab === 'packages' && (
+            <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="bg-cyan-50 text-cyan-700 font-bold text-xs px-3 py-1 rounded-xl">Mobile Legends: Bang Bang</span>
+                <button className="bg-cyan-500 text-white font-bold text-xs px-3 py-2 rounded-xl flex items-center gap-1.5"><Plus size={14}/> Add Pack</button>
+              </div>
+              
+              {/* Individual Editable Card Structure Example */}
+              <div className="border border-slate-100 rounded-2xl p-4 space-y-3 bg-slate-50/40">
+                <div className="flex items-center justify-between">
+                  <div className="w-10 h-10 bg-white rounded-xl shadow-inner flex items-center justify-center text-lg">💼</div>
+                  <div className="flex gap-1">
+                    <button className="p-2 bg-blue-500 text-white rounded-xl"><Save size={14}/></button>
+                    <button className="p-2 bg-red-50 border border-red-100 text-red-500 rounded-xl"><Trash2 size={14}/></button>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <input type="number" defaultValue="86" className="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-xs font-bold" placeholder="Diamond Count" />
+                  <input type="number" defaultValue="126" className="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-cyan-600" placeholder="Price (₹)" />
+                  <input type="text" placeholder="Badge (optional)" className="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-xs" />
+                  <input type="text" defaultValue="Small packs" className="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-xs" placeholder="Category" />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 4: ORDERS QUEUE REGISTRY */}
+          {adminTab === 'orders' && (
+            <div className="space-y-3">
+              <div className="flex gap-1.5 bg-white p-1.5 border border-slate-100 rounded-xl shadow-sm">
+                {['ALL', 'PENDING', 'COMPLETED', 'CANCELLED'].map((st, i) => (
+                  <button key={i} className={`flex-1 text-center py-2 text-[10px] font-black tracking-wider rounded-lg uppercase ${i===0 ? 'bg-cyan-500 text-white shadow-sm' : 'text-slate-400 hover:bg-slate-50'}`}>{st}</button>
+                ))}
+              </div>
+
+              {orders.map((order) => (
+                <div key={order.id} className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-black text-slate-800 text-base">{order.pack} · ₹{order.price}</h4>
+                      <span className="text-[10px] font-medium text-slate-400 block mt-0.5">When: {order.date}</span>
+                    </div>
+                    <span className="bg-emerald-50 text-emerald-600 text-[10px] font-black px-2 py-0.5 rounded-md border border-emerald-100">{order.status}</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-y-1.5 gap-x-4 border-t border-b border-slate-50 py-3 text-xs font-semibold text-slate-500">
+                    <div>User: <span className="text-slate-800 font-bold">{order.user}</span></div>
+                    <div>Game ID: <span className="text-slate-800 font-mono font-bold">{order.gameId}</span></div>
+                    <div>Server: <span className="text-slate-800 font-mono font-bold">{order.server}</span></div>
+                    <div>Payment: <span className="text-slate-800 font-bold">{order.payment}</span></div>
+                    <div className="col-span-2 truncate">Ref: <span className="text-cyan-600 font-mono font-bold">{order.ref}</span></div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button className="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white font-bold text-xs p-2.5 rounded-xl transition shadow-sm">Mark Completed</button>
+                    <button className="px-4 border border-red-100 text-red-500 font-bold text-xs rounded-xl bg-red-50/20 hover:bg-red-50">Cancel</button>
+                    <button className="px-4 border border-slate-200 text-slate-600 font-bold text-xs rounded-xl hover:bg-slate-50">Reopen</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* TAB 5: BANNERS CONTENT MODAL */}
+          {adminTab === 'banners' && (
+            <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="font-bold text-slate-900 text-sm">Banners Configuration</h3>
+                <button className="bg-cyan-500 text-white font-bold text-xs px-3 py-2 rounded-xl flex items-center gap-1"><Plus size={12}/> Banner</button>
+              </div>
+              <div className="space-y-3 bg-slate-50/50 border border-slate-100 p-4 rounded-2xl">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Title</label>
+                  <input type="text" defaultValue="ASPIRANTS. SHOP" className="w-full bg-white border border-slate-200 rounded-xl p-2.5 text-xs font-bold" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Banner Image</label>
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-slate-200 rounded-xl overflow-hidden shadow-inner"><img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=100" className="w-full h-full object-cover" /></div>
+                    <input type="file" className="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 pt-2">
+                  <input type="checkbox" defaultChecked id="active-banner" className="rounded text-cyan-500 focus:ring-cyan-500" />
+                  <label htmlFor="active-banner" className="text-xs font-bold text-slate-600">Active</label>
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <button className="flex-1 bg-cyan-500 text-white font-bold text-xs p-2.5 rounded-xl flex items-center justify-center gap-1"><Save size={14}/> Save</button>
+                  <button className="border border-red-100 text-red-500 bg-red-50/20 hover:bg-red-50 p-2.5 rounded-xl"><Trash2 size={14}/></button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 6: GLOBAL METRICS SITE SETTINGS */}
+          {adminTab === 'settings' && (
+            <div className="bg-white border border-slate-100 rounded-3xl p-5 shadow-sm space-y-4">
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Payment UPI ID</label>
+                  <input type="text" value={siteSettings.upiId} onChange={(e)=>setSiteSettings({...siteSettings, upiId: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs font-mono font-bold" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Location</label>
+                  <input type="text" value={siteSettings.location} onChange={(e)=>setSiteSettings({...siteSettings, location: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs font-bold" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Hero Title</label>
+                  <input type="text" value={siteSettings.heroTitle} onChange={(e)=>setSiteSettings({...siteSettings, heroTitle: e.target.value})} className="w-full bg-slate-50 border border-slate-100 rounded-xl p-3 text-xs font-bold" />
+                </div>
+              </div>
+              <button className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold p-3 rounded-xl text-xs flex items-center justify-center gap-1 shadow-md shadow-cyan-100 transition"><Save size={14}/> Save Settings</button>
+            </div>
+          )}
+
+        </div>
+      )}
+
     </div>
-
-    <footer>
-      &copy; 2025 Aspirants Shop. All rights reserved.
-      <a href="#" class="admin-link">Admin Panel (External)</a>
-    </footer>
-  </div>
-</body>
-</html>
+  );
+}
